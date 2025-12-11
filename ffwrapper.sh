@@ -24,7 +24,7 @@ while getopts 'hi:d:s:o:brgt' OP; do
             echo "-i      Runs command on single file. Next argument should be path to file. Either this or -d is required."
             echo "-d      Runs command on all media files in the directory. Next argument should be path to directory. Either this or -i is required."
             echo "-s      Select streams to add to output file. Find which streams you want to use with ffprobe and input them in a comma seperated list. This argument is required."
-            echo "-o      Select the output container."
+            echo "-o      Select the output container. This argument is required."
             echo "-t      Transcode to HEVC. Average bitrate will be selected as 60% of input bitrate. Max bitrate is 75% of original source bitrate. Currently only NVENC is supported."
             echo "-b      Convert to 10-bit video. Should only be used with -t (although this is not dynamically checked yet)."
             echo "-g      Regenerate timing data. Useful if remuxing/transcoding from Matroska files which are less strict about accurate decoding timings. Use this if output looks choppy or laggy."
