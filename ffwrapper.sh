@@ -142,7 +142,7 @@ function build_cmd () {
 
     local RET="ffmpeg -hide_banner"
     if [[ $GARG -eq 1 ]]; then
-        RET="${RET} -fflags +genpts"
+        RET="${RET} -fflags +discardcorrupt -fflags +genpts"
     fi
     # add file to command
     if [[ -n "$IARG" ]]; then
