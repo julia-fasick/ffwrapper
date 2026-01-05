@@ -28,7 +28,7 @@ while getopts 'hi:d:s:o:brgt' OP; do
             echo "-t      Transcode to HEVC. Average bitrate will be selected as 60% of input bitrate. Max bitrate is 75% of original source bitrate. Currently only NVENC is supported."
             echo "-b      Convert to 10-bit video. Should only be used with -t (although this is not dynamically checked yet)."
             echo "-g      Regenerate timing data. Useful if remuxing/transcoding from Matroska files which are less strict about accurate decoding timings. Use this if output looks choppy or laggy."
-            echo "-r      Removes the source file when command is complete. Use with caution!"
+            echo "-r      Removes the source file when command is complete. Will operate in place when current output filename is the same as old filename. Use with caution!"
             echo "For example, if you want to to select streams 0, 2, and 5, as well as convert to 10-bit HEVC for all files in the current directory and save them in the mp4 container while regenerating the timing data and removing the original file after completion, you can run the following:"
             echo "ffwrapper.sh -d ./ -s 0,2,5 -t -b -g -r -o mp4"
             exit
