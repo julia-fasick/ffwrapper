@@ -205,17 +205,26 @@ function build_cmd () {
     # add output to command
     # resolve basename of file and add .OARG
     OUTFILE="${BASENAME%.*}.$OARG"
-    if [[ "$(basename "$OUTFILE")" == "$(basename "$INPUT")" ]]; then
+    if [[ -e "${OUTDIR}/${OUTFILE}" ]]; then
         OUTFILE="NEW_${OUTFILE}"
+        INPLACE_RENAME=1 # we set this here so that later when dealing with RARG we can reference it to know if we should move outfile to original file name after removing old original source
     fi
 
     # add output file path
     RET="${RET} \"${OUTDIR}/${OUTFILE}\""
+
+    # add remove original arg
     if [[ "$RARG" -eq 1 ]]; then
         if [[ -n "$IARG" ]]; then
             RET="${RET} && rm \"${IARG}\""
+            if [[ "$INPLACE_RENAME" -eq 1 ]]; then
+                RET="${RET} && mv \"${OUTDIR}/${OUTFILE}\" \"${IARG}\" "
+            fi
         else
             RET="${RET} && rm \"${1}\""
+            if [[ "$INPLACE_RENAME" -eq 1 ]]; then
+                RET="${RET} && mv \"${OUTDIR}/${OUTFILE}\" \"${1}\" "
+            fi
         fi
     fi
 
