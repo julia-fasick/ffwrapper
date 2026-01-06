@@ -239,11 +239,9 @@ if  [[ -n "$IARG" ]]; then
     echo "$CMD"
     eval "$CMD" 2>&1
 else
-    for FILE in "$DARG"/*; do
-	    if [ -f "$FILE" ] && [[ "$FILE" == *.mkv || "$FILE" == *.mp4 || "$FILE" == *.m4v || "$FILE" == *.mov ]]; then
-            CMD="$(build_cmd "$FILE")"
-            echo "$CMD"
-            eval "$CMD" 2>&1
-        fi
+    find "$DARG" -maxdepth 1 -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.m4v' -o -iname '*.mov' \) -print0 |
+    while IFS= read -r -d '' FILE; do
+        CMD="$(build_cmd "$FILE")"
+        eval "$CMD" 2>&1
     done
 fi
