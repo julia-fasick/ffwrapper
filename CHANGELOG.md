@@ -2,6 +2,7 @@
 
 ## 01.05.2026
 
+- bugfix for IFS
 - replaced globbing with find logic the in place rename behaves nicer
 - fixed bug where when fallback bitrate is echod ffmpeg crashes
 - created changelog
