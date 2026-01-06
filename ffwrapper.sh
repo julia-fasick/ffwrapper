@@ -184,7 +184,7 @@ function build_cmd () {
 
        # fallback
        if ! [[ "$SRC_BITRATE_RAW" =~ ^[0-9]+$ ]] || [[ "$SRC_BITRATE_RAW" -eq 0 ]]; then
-           echo "WARNING: Bitrate not detected for '$INPUT' (ffprobe returned '$SRC_BITRATE_RAW'). Using fallback 5 Mbps."
+           echo "WARNING: Bitrate not detected for '$INPUT' (ffprobe returned '$SRC_BITRATE_RAW'). Using fallback 5 Mbps." >&2
            SRC_BITRATE=5000000
        else
            SRC_BITRATE=$SRC_BITRATE_RAW
