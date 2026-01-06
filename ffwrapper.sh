@@ -140,15 +140,13 @@ fi
 
 function build_cmd () {
     # establish some vars holding info we'll use later
-    if [[ -n "$IARG" ]]; then
-        INPUT="$IARG"
-        OUTDIR=$(dirname "$(realpath "$INPUT")")
-        BASENAME=$(basename "$INPUT")
-    else
-        INPUT="$1"
-        OUTDIR=$(dirname "$(realpath "$1")")
-        BASENAME=$(basename "$1")
-    fi
+    INPUT="$1"
+    OUTDIR=$(dirname "$(realpath "$1")")
+    BASENAME=$(basename "$1")
+
+    echo "${INPUT}"
+    echo "${OUTDIR}"
+    echo "${BASENAME}"
 
     local RET="ffmpeg -hide_banner"
     if [[ $GARG -eq 1 ]]; then
@@ -245,7 +243,7 @@ function build_cmd () {
 # if in file mode just run the command
 if  [[ -n "$IARG" ]]; then
     # execute CMD and pipe to output
-    CMD="$(build_cmd)"
+    CMD="$(build_cmd "$IARG")"
     echo "$CMD"
     bash -lc "$CMD" 2>&1
 else
