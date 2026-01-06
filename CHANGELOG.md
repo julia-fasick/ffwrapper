@@ -2,6 +2,8 @@
 
 ## 01.05.2026
 
+- reformat codebase
+- switch to process substitution instead of subshell
 - bugfix for IFS
 - replaced globbing with find logic the in place rename behaves nicer
 - fixed bug where when fallback bitrate is echod ffmpeg crashes
