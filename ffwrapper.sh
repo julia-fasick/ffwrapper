@@ -133,7 +133,7 @@ fi
 # TODO: if -t check nvenc support (or better yet, add support for other hardware accelerated (or unacclerated, even) transcoders)
 # -2 can only be used if -o is mkv or mp4
 # TODO: dynamically validate by parsing through the output of whatever command show ffmpeg codec support
-if [[ -n "$TFLAG" && "$OARG" != "mp4" && "$OARG" != "mkv" ]]; then
+if [[ $TFLAG -eq 1 && "$OARG" != "mp4" && "$OARG" != "mkv" ]]; then
     echo "ERROR: -t can only be used when -o is set to 'mp4' or 'mkv'! If you can ensure another container will be compatible with this program and HEVC content, make a pull request adding it to the above filter (include your testing)."
     exit 1
 fi
