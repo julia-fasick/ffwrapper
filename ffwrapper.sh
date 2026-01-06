@@ -144,7 +144,7 @@ function run_one() {
 		echo "BUG: run_one called with empty argument" >&2
 		return 99
 	fi
-	INPUT="$(realpath "$1")"
+	INPUT="$1"
 	OUTDIR=$(dirname "$INPUT")
 	BASENAME=$(basename "$INPUT")
 
@@ -249,16 +249,13 @@ function run_one() {
 if [[ -n "$IARG" ]]; then
 	run_one "$IARG" || exit $?
 else
-	err=0
-	while IFS= read -r -d '' FILE; do
-		run_one "$FILE" || {
-			err=$?
-			break
-		}
-	done < <(
-		find "$DARG" -maxdepth 1 -type f \
-			\( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.m4v' -o -iname '*.mov' \) \
-			-print0
-	)
-	exit $err
+  # get realpath for DARG so that find behaves
+  if [[ -n "$DARG" ]]; then
+      DARG="$(realpath "$DARG")"
+  fi
+  shopt -s nullglob
+  for FILE in "$DARG"/*.{mkv,mp4,m4v,mov}; do
+    [[ -f "$FILE" ]] || continue
+    run_one "$FILE" || exit $?
+  done
 fi
