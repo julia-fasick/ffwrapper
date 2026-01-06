@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# initialize flags to defaults
+TENBIT=0
+RARG=0
+GARG=0
+TFLAG=0
+INPLACE_RENAME=0
+
 # TODO: check ffmpeg install status
 
 # TODO: enable double dash arguments like --recursive --delete, etc for a more verbose experience
@@ -40,7 +47,10 @@ while getopts 'hi:d:s:o:brgt' OP; do
             DARG="$OPTARG"
         ;;
         s)
+            # save/reset ifs
+            OLDIFS="$IFS"
             IFS=',' read -ra SARG <<< "$OPTARG"
+            IFS="$OLDIFS"
         ;;
         o)
             OARG="$OPTARG"
@@ -136,7 +146,7 @@ function build_cmd () {
         BASENAME=$(basename "$INPUT")
     else
         INPUT="$1"
-        OUTDIR=$(pwd)
+        OUTDIR=$(dirname "$(realpath "$1")")
         BASENAME=$(basename "$1")
     fi
 
@@ -237,11 +247,11 @@ if  [[ -n "$IARG" ]]; then
     # execute CMD and pipe to output
     CMD="$(build_cmd)"
     echo "$CMD"
-    eval "$CMD" 2>&1
+    bash -lc "$CMD" 2>&1
 else
     find "$DARG" -maxdepth 1 -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.m4v' -o -iname '*.mov' \) -print0 |
     while IFS= read -r -d '' FILE; do
         CMD="$(build_cmd "$FILE")"
-        eval "$CMD" 2>&1
+        bash -lc "$CMD" 2>&1
     done
 fi
