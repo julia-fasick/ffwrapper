@@ -205,9 +205,22 @@ function run_one() {
 		fi
 
 		SRC_KBPS=$((SRC_BITRATE / 1000))
-		# calculate new hevc bitrates (say 60% avg and 75% max)
-		AUTO_BV=$((SRC_KBPS * 60 / 100))
-		AUTO_MAXRATE=$((SRC_KBPS * 75 / 100))
+
+    # get the codec so we can determine new bitrate
+		CODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "$INPUT")
+
+
+		if [[ "$CODEC" == "h264" ]]; then
+		  # we'll use 60% avg and 75% max bitrates for h264 to hevc
+      AUTO_BV=$((SRC_KBPS * 60 / 100))
+    	AUTO_MAXRATE=$((SRC_KBPS * 75 / 100))
+    elif [[ "$CODEC" == "hevc" ]]; then
+      # for hevc to hevc, we actually want to figure out approx h264 file size and reapply our sizing to that so we are not compressing already compressed stuff
+      H264_EQ=$(( SRC_KBPS * 180 / 100 ))
+		  AUTO_BV=$(( H264_EQ * 60 / 100 ))
+      AUTO_MAXRATE=$(( H264_EQ * 75 / 100 ))
+		fi
+
 		# use new values
 		cmd+=(-c:v hevc_nvenc -preset p7 -vtag hvc1 -profile:v main10 -tune:v hq -rc:v vbr -multipass 2 -b:v "${AUTO_BV}k" -maxrate "${AUTO_MAXRATE}k" -spatial-aq 1 -aq-strength 8 -rc-lookahead 32)
 	else
