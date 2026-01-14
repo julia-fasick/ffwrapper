@@ -45,7 +45,7 @@ Key behavior:
 - `-s`  Select streams to include in the output, as a comma-separated list of zero-based stream indices. Example: `-s 0,2,5`
       Use `ffprobe` to inspect streams and decide which to keep. All non-selected streams are excluded.
 - `-o`  Output container/format. One of: `mp4`, `mkv`, `srt`, `ass`.
-- `-t`  Transcode video to HEVC via NVENC. The script auto-derives a target average bitrate (~60% of source) and max bitrate (~75% of source).
+- `-t`  Transcode video to HEVC via NVENC. The script auto-derives a target average bitrate and max bitrate dependent on the original codec.
       Only valid with `-o mp4` or `-o mkv`.
 - `-b`  Use 10‑bit video pixel format (`p010le`). Intended for use with `-t`.
 - `-g`  Regenerate timing data (adds `-fflags +discardcorrupt +genpts`). Useful when the output looks choppy/laggy, especially from Matroska sources.
