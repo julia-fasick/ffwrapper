@@ -1,5 +1,8 @@
 # Changelog
 
+## 01.14.2026
+- add hevc -> hevc transcoding bitrates
+
 ## 01.05.2026
 
 - reformat codebase

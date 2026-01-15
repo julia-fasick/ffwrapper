@@ -32,9 +32,9 @@ while getopts 'hi:d:s:o:brgt' OP; do
 		echo "-d      Runs command on all media files in the directory. Next argument should be path to directory. Either this or -i is required."
 		echo "-s      Select streams to add to output file. Find which streams you want to use with ffprobe and input them in a comma seperated list. This argument is required."
 		echo "-o      Select the output container. This argument is required."
-		echo "-t      Transcode to HEVC. Average bitrate will be selected as 60% of input bitrate. Max bitrate is 75% of original source bitrate. Currently only NVENC is supported."
+		echo "-t      Transcode to HEVC. Average bitrate will be selected automagically dependent on original source codec. Currently only NVENC_HEVC is supported."
 		echo "-b      Convert to 10-bit video. Should only be used with -t (although this is not dynamically checked yet)."
-		echo "-g      Regenerate timing data. Useful if remuxing/transcoding from Matroska files which are less strict about accurate decoding timings. Use this if output looks choppy or laggy."
+		echo "-g      Regenerate timing data. Useful if remuxing/transcoding from Matroska files which are less strict about accurate decoding timings. Use this if output looks choppy or laggy. If this still fails to fix, you can reencode with -t at the cost of a bit of quality loss"
 		echo "-r      Removes the source file when command is complete. Will operate in place when current output filename is the same as old filename. Use with caution!"
 		echo "For example, if you want to to select streams 0, 2, and 5, as well as convert to 10-bit HEVC for all files in the current directory and save them in the mp4 container while regenerating the timing data and removing the original file after completion, you can run the following:"
 		echo "ffwrapper.sh -d ./ -s 0,2,5 -t -b -g -r -o mp4"
@@ -205,9 +205,22 @@ function run_one() {
 		fi
 
 		SRC_KBPS=$((SRC_BITRATE / 1000))
-		# calculate new hevc bitrates (say 60% avg and 75% max)
-		AUTO_BV=$((SRC_KBPS * 60 / 100))
-		AUTO_MAXRATE=$((SRC_KBPS * 75 / 100))
+
+    # get the codec so we can determine new bitrate
+		CODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "$INPUT")
+
+
+		if [[ "$CODEC" == "h264" ]]; then
+		  # we'll use 60% avg and 75% max bitrates for h264 to hevc
+      AUTO_BV=$((SRC_KBPS * 60 / 100))
+    	AUTO_MAXRATE=$((SRC_KBPS * 75 / 100))
+    elif [[ "$CODEC" == "hevc" ]]; then
+      # for hevc to hevc, we actually want to figure out approx h264 file size and reapply our sizing to that so we are not compressing already compressed stuff
+      H264_EQ=$(( SRC_KBPS * 180 / 100 ))
+		  AUTO_BV=$(( H264_EQ * 60 / 100 ))
+      AUTO_MAXRATE=$(( H264_EQ * 75 / 100 ))
+		fi
+
 		# use new values
 		cmd+=(-c:v hevc_nvenc -preset p7 -vtag hvc1 -profile:v main10 -tune:v hq -rc:v vbr -multipass 2 -b:v "${AUTO_BV}k" -maxrate "${AUTO_MAXRATE}k" -spatial-aq 1 -aq-strength 8 -rc-lookahead 32)
 	else
